@@ -1,41 +1,34 @@
 # FROSTBITE
+**Crash-Safe Nonce Management in FROST Threshold Signatures**
 
-**Crash-Safe Nonce Use in FROST Threshold Signatures**
+B.Tech cryptography research | NIIT University | Research progress: 2 November 2026
 
-B.Tech research project | NIIT University | 26 October 2026
+## Question
+When an application using pre-generated FROST signing nonces crashes, retries, or restores an old database, can the same nonce be incorrectly used again?
 
-## Research question
+## Current implementation
+- **Phase 0**: SQLite model of opaque nonce IDs (available → burned), with basic unit tests.
+- **Phase 1**: [Fault-injection model](experiments/README.md) comparing an intentionally unsafe mark-after-exposure sequence, atomic burn-before-use, rollback of a primary DB, and a separately durable witness.
+- **Executed evidence (2 November 2026)**: 10/10 new deterministic tests passed, including a 16-contender race; 5 scenario experiments. See [reproducible results](experiments/results_2026-11-02.json).
 
-Can a pre-generated FROST nonce pair be reused after a crash, concurrent retry, or restoration of an older database snapshot?
-
-## Current status
-
-- Research scope, literature review, goals and fault-injection plan outlined.
-- Phase-0: small SQLite-based **nonce identifier** lifecycle simulation and tests.
-- **Not implemented:** a full 2-of-3 FROST cryptographic signer, integrated fault-injection harness, production-grade protection, or performance benchmarks.
-
-The simulation uses opaque IDs, **not FROST nonces or keys**. It cannot be used for real cryptographic systems.
-
-## Run demo
-
-```sh
-python3 -m unittest -v
+Run:
+```bash
+cd experiments
+python -m unittest -v
+python run_matrix.py
 ```
 
-No external dependencies. Tests check a first claim, replay rejection, concurrent claims, persistence across restart, and the known limitation of a stale DB snapshot.
+Requires Python 3.10+ and the standard library only. See [experiment assumptions and limitations](experiments/README.md).
 
-## Planned milestones
+### Main observed limitation
+Atomic transactions block ordinary duplicate claims, but restoring an older snapshot can revive nonce identifiers. A witness in an independent rollback domain rejects the observed primary-only rollback case, **but not rollback of both databases**.
 
-1. Integrate a vetted RFC 9591 FROST library in a local 2-of-3 testbed.
-2. Implement persistent nonce pair lifecycle and reference unsafe baseline.
-3. Inject crashes, retries, races, and database snapshot rollback.
-4. Evaluate transaction-based burn-before-use and independent monotonic/witness logging.
-5. Measure reuse violations, successful signatures, latency, storage overhead, and recovery.
+## Not yet implemented
+A real FROST signer, cryptographic nonce material, a vetted RFC 9591 signing integration, end-to-end process crash tests, multi-machine durability, or performance benchmarks.
 
-## Sources
+**WARNING: simulation only; do not use for securing real keys, signatures or wallets.**
 
-- [RFC 9591](https://www.rfc-editor.org/rfc/rfc9591)
-- [FROST (2020)](https://eprint.iacr.org/2020/852)
-- [Arctic (2024)](https://eprint.iacr.org/2024/466)
-
-**This is research/test code, not a security-reviewed signing system.**
+## References
+1. [RFC 9591](https://www.rfc-editor.org/rfc/rfc9591)
+2. [FROST (2020)](https://eprint.iacr.org/2020/852)
+3. [Arctic (2024)](https://eprint.iacr.org/2024/466)
