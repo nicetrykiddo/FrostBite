@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-02",
+  "kind": "nonce-ID state simulation (no FROST signing)",
+  "new_unit_tests": 10,
+  "new_unit_tests_passed": 10,
+  "concurrent_claimants": 16,
+  "scenarios": [
+    {
+      "scenario": "Crash after exposure, before burn",
+      "strategy": "Unsafe mark-after-use",
+      "replay_possible": true
+    },
+    {
+      "scenario": "Ordinary repeated claim",
+      "strategy": "Atomic burn-before-use",
+      "replay_possible": false
+    },
+    {
+      "scenario": "Primary database rollback",
+      "strategy": "Atomic burn-before-use",
+      "replay_possible": true
+    },
+    {
+      "scenario": "Primary database rollback",
+      "strategy": "Independent witness",
+      "replay_possible": false
+    },
+    {
+      "scenario": "Primary and witness rollback",
+      "strategy": "Independent witness",
+      "replay_possible": true
+    }
+  ],
+  "limitations": [
+    "Only opaque identifiers, not cryptographic signing nonces",
+    "A witness in the same rollback domain does not prevent nonce-ID replay",
+    "Outcomes are simulation results, not FROST protocol security proofs"
+  ]
+}
