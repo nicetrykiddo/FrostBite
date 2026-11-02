@@ -2,6 +2,7 @@
 **Crash-Safe Nonce Management in FROST Threshold Signatures**
 
 B.Tech cryptography research | NIIT University | Research progress: 2 November 2026
+By Garv , Mandeep .
 
 ## Question
 When an application using pre-generated FROST signing nonces crashes, retries, or restores an old database, can the same nonce be incorrectly used again?
